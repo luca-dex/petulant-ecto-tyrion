@@ -7,7 +7,6 @@
 # 
 # Rilasciato sotto lincenza maligna Unimiamib
 # 
-# 
 # Copyright (c) 2014, Alberto Donizetti, Luca De Sano, Massimiliano Scotti
 # All rights reserved.
 # See LICENSE.txt
