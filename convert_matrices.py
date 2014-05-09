@@ -19,32 +19,34 @@ import os
 ## create a .mtx file from a .dat file (filename) so we can
 ## read matrices with the scipy builtin sparse matrix reader 
 def change_format(filename):
-    f = open(filename)
+    """
+    change .dat file to Matrix Market Format
+    """
+    with open(filename) as f:
     
-    comment = "%%MatrixMarket matrix coordinate real "
-    if "non" in f.name:
-        comment += "unsymmetric\n"
-    else:
-        comment += "symmetric\n"
-        
-    n, l, form = f.readline().split()
-    form =  n + " " + n + " " + l + "\n"
-        
-    f_new = open("mtx_files/" + filename.replace("dat", "mtx"), "w")
-        
-    f_new.write(comment)
-    f_new.write(form)
-    for line in f.readlines():
-        f_new.write(line)
-                
-    f.close()
-    f_new.close()
+        comment = "%%MatrixMarket matrix coordinate real "
+        if "non" in f.name:
+            comment += "unsymmetric\n"
+        else:
+            comment += "symmetric\n"
+            
+        n, l, form = f.readline().split()
+        form = n + " " + n + " " + l + "\n"
+          
+        filename_new = "mtx_files/" + filename.replace("dat", "mtx")
+
+        with open(filename_new, "w") as f_new:
+            
+            f_new.write(comment)
+            f_new.write(form)
+            for line in f:
+                f_new.write(line)
 
 
-## change the format of all the .dat files in the current
-## directory. Put the .mtx files in a new folder name mtx_files
 def change_all():
-    # if a 'mtx_files' folder exists in curr dir, we just return
+    """
+    change to Matrix Market Format all files in the current dir
+    """
     if os.path.exists("mtx_files"):
         return
     
