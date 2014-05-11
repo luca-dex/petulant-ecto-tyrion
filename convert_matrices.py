@@ -16,11 +16,10 @@
 
 import os
 
-## create a .mtx file from a .dat file (filename) so we can
-## read matrices with the scipy builtin sparse matrix reader 
 def change_format(filename):
     """
-    change .dat file to Matrix Market Format
+    create a .mtx file from a .dat file (filename) so we can
+    read matrices with the scipy builtin sparse matrix reader 
     """
     with open(filename) as f:
     
@@ -43,11 +42,12 @@ def change_format(filename):
                 f_new.write(line)
 
 
-def change_all():
+def main():
     """
     change to Matrix Market Format all files in the current dir
     """
     if os.path.exists("mtx_files"):
+        print("Directory \'mtx_files\' found. Nothing to do here...")
         return
     
     # else we create the folder and convert all the .dat files
@@ -57,5 +57,7 @@ def change_all():
         if "dat" in filename:
             change_format(filename)
 
-change_all()
+
+if __name__ == '__main__':
+    main()
 

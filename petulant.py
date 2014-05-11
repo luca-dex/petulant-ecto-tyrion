@@ -16,14 +16,16 @@ from __future__ import print_function
 import os
 import numpy as np
 from scipy.sparse import *
-from scipy.io import mminfo, mmread 
+from scipy.io import mmread 
 import scipy.sparse.linalg as sla 
 
 def sol_error(x, true_x):
     return np.linalg.norm(true_x - x) / np.linalg.norm(true_x)
 
 def solve_system(filename, method, toll=None):
-    # read matrix from file and convert into csc_matrix format
+    """
+    read matrix from file and convert into csc_matrix format
+    """
     A = csc_matrix(mmread(filename))
     size = A.shape
 
