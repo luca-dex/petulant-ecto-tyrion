@@ -20,9 +20,7 @@ from scipy.io import mminfo, mmread
 import scipy.sparse.linalg as sla 
 
 def sol_error(x, true_x):
-    n_x = np.linalg.norm(x)
-    n_tx = np.linalg.norm(true_x)
-    return (n_tx - n_x) / n_tx
+    return np.linalg.norm(true_x - x) / np.linalg.norm(true_x)
 
 def solve_system(filename, method, toll=None):
     # read matrix from file and convert into csc_matrix format
