@@ -33,7 +33,7 @@ def change_format(filename):
         form = n + " " + n + " " + l + "\n"
           
         filename_new = "mtx_files/" + filename.replace("dat", "mtx")
-
+        
         with open(filename_new, "w") as f_new:
             
             f_new.write(comment)
