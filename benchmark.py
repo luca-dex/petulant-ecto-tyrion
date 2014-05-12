@@ -18,6 +18,15 @@ import time
 import os, re
 import scipy.sparse.linalg as sla
 
+def dump_data_to_file(data, filename):
+    print(data)
+    with open(filename, "w") as f:
+        times = [data[t][0] for t in sorted(data)]
+        errors = [data[t][1] for t in sorted(data)]
+        f.write(str(times))
+        f.write('\n')
+        f.write(str(errors))
+
 def solve_all(type, method):
     """
     test 1: risolve tutti i sistemi di tipo 'type' (simmetrici o
@@ -32,13 +41,13 @@ def solve_all(type, method):
         _, error = petulant.solve_system('mtx_files/' + filename, method)
         end = time.clock()
         key = re.search(r"(\d+)", filename).group(0)
-        data[key] = (end - start, error)
+        data[int(key)] = (end - start, error)
     return data
 
 data = solve_all("non", sla.spsolve)
+dump_data_to_file(data, "non-simmetriche.data")
 
-for k, v in data.items():
-    print(k, ": time = ", v[0], ", err =  ", v[1])
+
         
 
 
