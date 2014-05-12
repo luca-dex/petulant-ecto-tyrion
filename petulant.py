@@ -22,10 +22,12 @@ import scipy.sparse.linalg as sla
 def sol_error(x, true_x):
     return np.linalg.norm(true_x - x) / np.linalg.norm(true_x)
 
-def solve_system(filename, method, toll=None):
+def solve_system(filename, method, toll=1e-5):
     """
-    read matrix from file and convert into csc_matrix format
+    Solve linear system Ax = b with A matrix in filename and
+    b = (0, 1, 2, 3, ...) using the specified method
     """
+    # read matrix from file and convert into csc_matrix format
     A = csc_matrix(mmread(filename))
     size = A.shape
 
