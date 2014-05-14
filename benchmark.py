@@ -14,69 +14,87 @@
 from __future__ import print_function
 
 import petulant
-import time
-import os, re
+import time, os, re
+from scipy.sparse import *
+from scipy.io import mmread
 import scipy.sparse.linalg as sla
 
 methods = (sla.spsolve,     # diretto
-           sla.bicg,        # BIConjugate Gradient
+           # sla.bicg,        # BIConjugate Gradient
            sla.bicgstab,    # BIConjugate Gradient Stabilized
-           sla.cg,          # Conjugate Gradient
+           # sla.cg,          # Conjugate Gradient
            sla.cgs,         # Conjugate Gradient Squared
-           sla.gmres,       # Generalized Minimal Residual
+           # sla.gmres,       # Generalized Minimal Residual
            sla.lgmres,      # LGMRES 
-           sla.minres,      # Minimal Residual
+           # sla.minres,      # Minimal Residual
            sla.qmr,         # Quasi-minimal Residual
 )
 
+symm = {}
+unsymm = {}
+
+def read_matrices():
+    os.chdir('./matrici/mtx_files')
+    for mtx_file in os.listdir('.'):
+        dim = int(re.search(r"(\d+)", mtx_file).group(0))
+        A = csc_matrix(mmread(mtx_file))
+        if 'non' in mtx_file:
+            unsymm[dim] = A
+        else:
+            symm[dim] = A
+    os.chdir('../../benchmarks results')
+    print("Done reading matrices!")
+
 def solve_all(type, method):
     """
-    test 1: risolve tutti i sistemi di tipo 'type' (symm o
+    Risolve tutti i sistemi di tipo 'type' (symm o
     unsymm) usando il metodo specificato, ritorna i tempi
     di esecuzione e l'errore sulla soluzione
     """
     data = {}
-    for filename in os.listdir('../matrici/mtx_files'):
-        if type == "symm" and "non" in filename:
-            continue
-        if type == "unsymm" and "non" not in filename:
-            continue
+    Matrices = symm if type == 'symm' else unsymm
+    for dim in sorted(Matrices):
+        A = Matrices[dim]
         start = time.clock()
-        _, error = petulant.solve_system(filename, method)
+        sol, error = petulant.solve_system(A, method)
         end = time.clock()
-        key = re.search(r"(\d+)", filename).group(0)
-        data[int(key)] = (end - start, error)
+        data[dim] = (end - start, error)
     return data
 
 
 def test_1(type):
-    os.chdir('./benchmarks results')
-    with open('test1' + type + '.txt', 'w') as f:
-        for method in methods:
-            data = solve_all(type, method)
-            times = [data[t][0] for t in sorted(data)]
-            dimensions = sorted(data)
-            f.write('%' + str(method) + '\n')
-            f.write(str(dimensions) + '\n')
-            f.write(str(times) + '\n')
-            print(" " + str(method) + " done!")
+    """
+    Tutti i sistemi di un certo tipo 'type' (symm o 
+    unsymm) usando tutti i metodi. Genera due files
+    (times and errs) rispettivamente con i tempi di 
+    esecuzione e gli errori commessi
+    """
+    f_times = open('test1' + type + ' times', 'w')
+    f_errs = open('test1' + type + ' errs', 'w')
+    
+    write_dims = True
+    for method in methods:
+        # risolve tutti i sistemi ed estra i dati dal dict
+        data = solve_all(type, method)
+        dims = sorted(data)
+        times = [data[t][0] for t in dims]
+        errs = [data[t][1] for t in dims]
 
-def test_2(type):
-    os.chdir('./benchmarks results')
-    with open('test2' + type + '.txt', 'w') as f:
-        for method in methods:
-            data = solve_all(type, method)
-            errors = [data[t][1] for t in sorted(data)]
-            dimensions = sorted(data)
-            f.write('%' + str(method) + '\n')
-            f.write(str(dimensions) + '\n')
-            f.write(str(errors) + '\n')
-            print(" " + str(method) + " done!")
+        # scrive su file gli array
+        if write_dims:
+            f_times.write(str(dims) + '\n')
+            f_errs.write(str(dims) + '\n')
+            write_dims = False
 
-test_2("symm")
+        f_times.write('%' + str(method) + '\n')
+        f_errs.write('%' + str(method) + '\n')
+        f_times.write(str(times) + '\n')
+        f_errs.write(str(errs) + '\n')
 
+        print(" " + str(method) + " done!")
 
-
+read_matrices()
+test_1('simm')
         
 
 
