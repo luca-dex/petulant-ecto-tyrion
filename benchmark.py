@@ -21,12 +21,12 @@ import scipy.sparse.linalg as sla
 methods = (sla.spsolve,     # diretto
            sla.bicg,        # BIConjugate Gradient
            sla.bicgstab,    # BIConjugate Gradient Stabilized
-           sla.cg,              # Conjugate Gradient
-           sla.cgs,             # Conjugate Gradient Squared
-           sla.gmres,           # Generalized Minimal Residual
-           sla.lgmres,          # LGMRES 
-           sla.minres,          # Minimal Residual
-           sla.qmr,             # Quasi-minimal Residual
+           sla.cg,          # Conjugate Gradient
+           sla.cgs,         # Conjugate Gradient Squared
+           sla.gmres,       # Generalized Minimal Residual
+           sla.lgmres,      # LGMRES 
+           sla.minres,      # Minimal Residual
+           sla.qmr,         # Quasi-minimal Residual
 )
 
 def solve_all(type, method):
@@ -36,8 +36,8 @@ def solve_all(type, method):
     di esecuzione e l'errore sulla soluzione
     """
     data = {}
-    for filename in os.listdir('.'):
-        if type == "symm" and  "non" in filename:
+    for filename in os.listdir('../matrici/mtx_files'):
+        if type == "symm" and "non" in filename:
             continue
         if type == "unsymm" and "non" not in filename:
             continue
@@ -48,10 +48,33 @@ def solve_all(type, method):
         data[int(key)] = (end - start, error)
     return data
 
-os.chdir('./matrici/mtx_files')
 
-data = solve_all("symm", sla.spsolve)
-petulant.dump_data_to_file(data, 'result.txt')
+def test_1(type):
+    os.chdir('./benchmarks results')
+    with open('test1' + type + '.txt', 'w') as f:
+        for method in methods:
+            data = solve_all(type, method)
+            times = [data[t][0] for t in sorted(data)]
+            dimensions = sorted(data)
+            f.write('%' + str(method) + '\n')
+            f.write(str(dimensions) + '\n')
+            f.write(str(times) + '\n')
+            print(" " + str(method) + " done!")
+
+def test_2(type):
+    os.chdir('./benchmarks results')
+    with open('test2' + type + '.txt', 'w') as f:
+        for method in methods:
+            data = solve_all(type, method)
+            errors = [data[t][1] for t in sorted(data)]
+            dimensions = sorted(data)
+            f.write('%' + str(method) + '\n')
+            f.write(str(dimensions) + '\n')
+            f.write(str(errors) + '\n')
+            print(" " + str(method) + " done!")
+
+test_2("symm")
+
 
 
         

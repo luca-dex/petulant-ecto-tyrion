@@ -28,7 +28,7 @@ def solve_system(filename, method, toll=1e-5):
     b = (0, 1, 2, 3, ...) using the specified method
     """
     # read matrix from file and convert into csc_matrix format
-    A = csc_matrix(mmread(filename))
+    A = csc_matrix(mmread('../matrici/mtx_files/' + filename))
     size = A.shape
 
     # find b vector such that Ax = b
@@ -46,13 +46,6 @@ def solve_system(filename, method, toll=1e-5):
 
     return x, sol_error(x, true_x)
 
-def dump_data_to_file(data, filename):
-    with open(filename, "w") as f:
-        times = [data[t][0] for t in sorted(data)]
-        errors = [data[t][1] for t in sorted(data)]
-        dimensions = sorted(data)
-        f.write(str(dimensions) + '\n')
-        f.write(str(times) + '\n')
-        f.write(str(errors) + '\n')
+
 
 
