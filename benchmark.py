@@ -51,7 +51,7 @@ def solve_all(type, method):
 os.chdir('./matrici/mtx_files')
 
 data = solve_all("symm", sla.spsolve)
-petulant.dump_data_to_file(data, 'result.dat')
+petulant.dump_data_to_file(data, 'result.txt')
 
 
         
