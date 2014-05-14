@@ -24,10 +24,13 @@ methods = (sla.spsolve,     # diretto
            sla.bicgstab,    # BIConjugate Gradient Stabilized
            # sla.cg,          # Conjugate Gradient
            sla.cgs,         # Conjugate Gradient Squared
-           # sla.gmres,       # Generalized Minimal Residual
+           sla.gmres,       # Generalized Minimal Residual
            sla.lgmres,      # LGMRES 
            # sla.minres,      # Minimal Residual
-           sla.qmr,         # Quasi-minimal Residual
+           # sla.qmr,         # Quasi-minimal Residual
+
+           # minres non converge alla soluzione 
+           # qmr necessita di 2 precondizionatori
 )
 
 symm = {}
