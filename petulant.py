@@ -46,20 +46,13 @@ def solve_system(filename, method, toll=1e-5):
 
     return x, sol_error(x, true_x)
 
-
-def main():
-    os.chdir("mtx_files")
-    
-    # solve unsymmetric system with a direct method
-    sol1, err1 = solve_system('non-simmetrica-1891.mtx', sla.spsolve) 
-    print("Sol: ", sol1)
-    print("Err: ", err1)
-
-    # solve simmetric system with an iterative method
-    sol2, err2 = solve_system('simmetrica-1891.mtx', sla.bicg, toll=1e-4)
-    print("Sol: ", sol2)
-    print("Err: ", err2)
+def dump_data_to_file(data, filename):
+    with open(filename, "w") as f:
+        times = [data[t][0] for t in sorted(data)]
+        errors = [data[t][1] for t in sorted(data)]
+        dimensions = sorted(data)
+        f.write(str(dimensions) + '\n')
+        f.write(str(times) + '\n')
+        f.write(str(errors) + '\n')
 
 
-if __name__ == '__main__':
-    main()
