@@ -46,7 +46,7 @@ def read_matrices():
             unsymm[dim] = A
         else:
             symm[dim] = A
-    os.chdir('../../benchmarks results')
+    os.chdir('../../benchmarks_results')
 
 def solve_all(type, method):
     """
