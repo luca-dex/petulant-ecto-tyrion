@@ -47,11 +47,11 @@ def solve_system(A, method):
         # errore intorno a 1e-6
         toll = {
             'bicg':     1e-6,
-            'bicgstab': 1e-14,
+            'bicgstab': 1e-15,
             'cg':       1e-6,
             'cgs':      1e-14,
-            'gmres':    1e-15,
-            'lgmres':   1e-8,
+            'gmres':    1e-18,
+            'lgmres':   1e-12,
             'minres':   1e-13,
             'qmr':      1e-6
         }
@@ -67,7 +67,7 @@ def main():
     A = csc_matrix(mmread('./matrici/mtx_files/simmetrica-46902.mtx'))
     print("> Done reading!")
 
-    sol, err = solve_system(A, sla.bicg)
+    sol, err = solve_system(A, sla.gmres)
     print(">>  Soluzione: ", sol[0:3], " ...")
     print(">>  Errore: ", err)
 
