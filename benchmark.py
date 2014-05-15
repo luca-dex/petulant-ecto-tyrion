@@ -98,11 +98,17 @@ def test_1(type):
         f_errs.write(str(errs) + '\n')
         print("\n\n")
 
+    f_times.close()
+    f_errs.close()
+
 
 read_matrices()
 print('> done reading!\n')
+
 test_1('simm')
-        
+print("\n\n***** Unsymmetric Matrices *****\n")
+
+test_1('unsymm')        
 
 
 

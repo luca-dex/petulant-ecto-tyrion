@@ -64,10 +64,10 @@ def solve_system(A, method):
     return x, sol_error(x, true_x)
 
 def main():
-    A = csc_matrix(mmread('./matrici/mtx_files/simmetrica-46902.mtx'))
+    A = csc_matrix(mmread('./matrici/mtx_files/non-simmetrica-23451.mtx'))
     print("> Done reading!")
 
-    sol, err = solve_system(A, sla.gmres)
+    sol, err = solve_system(A, sla.bicgstab)
     print(">>  Soluzione: ", sol[0:3], " ...")
     print(">>  Errore: ", err)
 
