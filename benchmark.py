@@ -26,7 +26,7 @@ methods = (sla.spsolve,     # diretto
            sla.cgs,         # Conjugate Gradient Squared
            sla.gmres,       # Generalized Minimal Residual
            sla.lgmres,      # LGMRES 
-           # sla.minres,      # Minimal Residual
+           sla.minres,      # Minimal Residual
            # sla.qmr,         # Quasi-minimal Residual
 
            # minres non converge alla soluzione 
@@ -46,7 +46,6 @@ def read_matrices():
         else:
             symm[dim] = A
     os.chdir('../../benchmarks results')
-    print("Done reading matrices!")
 
 def solve_all(type, method):
     """
@@ -60,6 +59,7 @@ def solve_all(type, method):
         A = Matrices[dim]
         start = time.clock()
         sol, error = petulant.solve_system(A, method)
+        print("\t error:", error)
         end = time.clock()
         data[dim] = (end - start, error)
     return data
@@ -77,6 +77,8 @@ def test_1(type):
     
     write_dims = True
     for method in methods:
+        print("> starting " + str(method))
+
         # risolve tutti i sistemi ed estra i dati dal dict
         data = solve_all(type, method)
         dims = sorted(data)
@@ -93,10 +95,11 @@ def test_1(type):
         f_errs.write('%' + str(method) + '\n')
         f_times.write(str(times) + '\n')
         f_errs.write(str(errs) + '\n')
+        print("\n\n")
 
-        print(" " + str(method) + " done!")
 
 read_matrices()
+print('> done reading!\n')
 test_1('simm')
         
 

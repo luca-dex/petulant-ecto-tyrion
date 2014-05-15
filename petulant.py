@@ -21,7 +21,7 @@ import scipy.sparse.linalg as sla
 def sol_error(x, true_x):
     return np.linalg.norm(true_x - x) / np.linalg.norm(true_x)
 
-def solve_system(A, method, toll=1e-6):
+def solve_system(A, method):
     """
     Solve linear system Ax = b with A matrix in filename and
     b = (0, 1, 2, 3, ...) using the specified method
@@ -41,12 +41,26 @@ def solve_system(A, method, toll=1e-6):
         # che approssima l'inversa di A)
         # http://osdir.com/ml/python-scientific-user/2011-06/msg00249.html
         P = sla.spilu(A, drop_tol=1e-5)  
-        print("> Computed Preconditioner P")
         M = sla.LinearOperator(size, P.solve)
-        x, conv = method(A, b, tol=toll, M=M)
-        if conv == 0:
-            print("> method " + method.func_name + " converged.\n")
 
+        # dobbiamo settare a mano la tolleranza in modo da avere
+        # errore intorno a 1e-6
+        toll = {
+            'spsolve':  1e-6,
+            'bicg':     1e-6,
+            'bicgstab': 1e-10,
+            'cg':       1e-6,
+            'cgs':      1e-10,
+            'gmres':    1e-10,
+            'lgmres':   1e-8,
+            'minres':   1e-6,
+            'qmr':      1e-6
+        }
+
+        x, conv = method(A, b, tol=toll[str(method.func_name)], M=M)
+        if conv == 0:
+            print("\t" + method.func_name + " converged on " + 
+                  str(size))
 
     return x, sol_error(x, true_x)
 
@@ -54,7 +68,7 @@ def main():
     A = csc_matrix(mmread('./matrici/mtx_files/simmetrica-46902.mtx'))
     print("> Done reading!")
 
-    sol, err = solve_system(A, sla.lgmres, toll=1e-8)
+    sol, err = solve_system(A, sla.bicg)
     print(">>  Soluzione: ", sol[0:3], " ...")
     print(">>  Errore: ", err)
 
