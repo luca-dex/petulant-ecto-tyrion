@@ -35,13 +35,21 @@ def solve_system(A, method):
     # solve Ax = b and check solution error
     if method == sla.spsolve:          # direct method
         x = method(A, b)
+        print("\t" + method.func_name + " solved " + 
+            str(size))
     else:                              # iterative methods
         # per accellerare la convergenza dei metodi iterativi
         # dobbiamo passare un precondizionatore (una matrice M,
         # che approssima l'inversa di A)
         # http://osdir.com/ml/python-scientific-user/2011-06/msg00249.html
-        P = sla.spilu(A, drop_tol=1e-5)  
+        try:
+            P = sla.spilu(A, drop_tol=1e-5)  
+        except:
+            print("\tPorta le tue sporche matrici singolari altrove...")
+            return None, "NA"
+
         M = sla.LinearOperator(size, P.solve)
+
 
         # dobbiamo settare a mano la tolleranza in modo da avere
         # errore intorno a 1e-6
@@ -57,6 +65,7 @@ def solve_system(A, method):
         }
 
         x, conv = method(A, b, tol=toll[str(method.func_name)], M=M)
+
         if conv == 0:
             print("\t" + method.func_name + " converged on " + 
                   str(size))
