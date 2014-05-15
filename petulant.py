@@ -46,14 +46,13 @@ def solve_system(A, method):
         # dobbiamo settare a mano la tolleranza in modo da avere
         # errore intorno a 1e-6
         toll = {
-            'spsolve':  1e-6,
             'bicg':     1e-6,
-            'bicgstab': 1e-10,
+            'bicgstab': 1e-14,
             'cg':       1e-6,
-            'cgs':      1e-10,
-            'gmres':    1e-10,
+            'cgs':      1e-14,
+            'gmres':    1e-15,
             'lgmres':   1e-8,
-            'minres':   1e-6,
+            'minres':   1e-13,
             'qmr':      1e-6
         }
 

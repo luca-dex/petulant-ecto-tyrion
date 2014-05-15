@@ -26,9 +26,10 @@ methods = (sla.spsolve,     # diretto
            sla.cgs,         # Conjugate Gradient Squared
            sla.gmres,       # Generalized Minimal Residual
            sla.lgmres,      # LGMRES 
-           sla.minres,      # Minimal Residual
+           # sla.minres,      # Minimal Residual
            # sla.qmr,         # Quasi-minimal Residual
 
+           # bicg non supporta precondizionatore via LinearOperator
            # minres non converge alla soluzione 
            # qmr necessita di 2 precondizionatori
 )
