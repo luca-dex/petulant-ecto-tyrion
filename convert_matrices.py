@@ -25,7 +25,7 @@ def change_format(filename):
     
         comment = "%%MatrixMarket matrix coordinate real "
         if "non" in f.name:
-            comment += "unsymmetric\n"
+            comment += "general\n"
         else:
             comment += "symmetric\n"
             

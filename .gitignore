@@ -1,6 +1,9 @@
 /matrici/*
 /benchmarks_results/*
 
+latex/*
+!latex/relazione.tex
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
