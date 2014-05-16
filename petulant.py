@@ -44,12 +44,12 @@ def solve_system(A, method):
         # http://osdir.com/ml/python-scientific-user/2011-06/msg00249.html
         try:
             P = sla.spilu(A, drop_tol=1e-5)  
-        except:
+        except Exception as err:
+            print("\t", err)
             print("\tPorta le tue sporche matrici singolari altrove...")
             return None, "NA"
 
         M = sla.LinearOperator(size, P.solve)
-
 
         # dobbiamo settare a mano la tolleranza in modo da avere
         # errore intorno a 1e-6
