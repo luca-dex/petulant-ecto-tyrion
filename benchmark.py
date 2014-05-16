@@ -21,11 +21,11 @@ import scipy.sparse.linalg as sla
 
 methods = (sla.spsolve,     # diretto
            # sla.bicg,        # BIConjugate Gradient
-           #sla.bicgstab,    # BIConjugate Gradient Stabilized
+           sla.bicgstab,    # BIConjugate Gradient Stabilized
            # sla.cg,          # Conjugate Gradient
-           #sla.cgs,         # Conjugate Gradient Squared
-           #sla.gmres,       # Generalized Minimal Residual
-           #sla.lgmres,      # LGMRES 
+           sla.cgs,         # Conjugate Gradient Squared
+           sla.gmres,       # Generalized Minimal Residual
+           sla.lgmres,      # LGMRES 
            # sla.minres,      # Minimal Residual
            # sla.qmr,         # Quasi-minimal Residual
 

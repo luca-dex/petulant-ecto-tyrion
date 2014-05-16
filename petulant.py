@@ -41,13 +41,13 @@ def solve_system(A, method):
         print("\t" + method.func_name + " solved " + 
             str(size) + " " + str(elapsed))
 
-        #PROVO QUESTO METODO DIRETTO ULTERIORE
-        start = time.clock()
-        lu = sla.splu(A)
-        x = lu.solve(b)
-        elapsed = time.clock() - start
-        print("\t" + "splu+solve" + " solved " + 
-            str(size)+ " " + str(elapsed))
+        # PROVO QUESTO METODO DIRETTO ULTERIORE
+        # start = time.clock()
+        # lu = sla.splu(A)
+        # x = lu.solve(b)
+        # elapsed = time.clock() - start
+        # print("\t" + "splu+solve" + " solved " + 
+        #     str(size)+ " " + str(elapsed))
 
 
     else:                              # iterative methods
