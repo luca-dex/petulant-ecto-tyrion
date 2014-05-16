@@ -17,6 +17,7 @@ import numpy as np
 from scipy.sparse import *
 from scipy.io import mmread 
 import scipy.sparse.linalg as sla 
+import time
 
 def sol_error(x, true_x):
     return np.linalg.norm(true_x - x) / np.linalg.norm(true_x)
@@ -33,10 +34,22 @@ def solve_system(A, method):
     b = A.dot(true_x)
 
     # solve Ax = b and check solution error
-    if method == sla.spsolve:          # direct method
+    if method == sla.spsolve:        # direct method
+        start = time.clock()
         x = method(A, b)
+        elapsed = time.clock() - start
         print("\t" + method.func_name + " solved " + 
-            str(size))
+            str(size) + " " + str(elapsed))
+
+        #PROVO QUESTO METODO DIRETTO ULTERIORE
+        start = time.clock()
+        lu = sla.splu(A)
+        x = lu.solve(b)
+        elapsed = time.clock() - start
+        print("\t" + "splu+solve" + " solved " + 
+            str(size)+ " " + str(elapsed))
+
+
     else:                              # iterative methods
         # per accellerare la convergenza dei metodi iterativi
         # dobbiamo passare un precondizionatore (una matrice M,
