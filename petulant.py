@@ -13,6 +13,8 @@
 
 from __future__ import print_function
 
+import time
+
 import numpy as np
 from scipy.sparse import *
 from scipy.io import mmread 
@@ -86,12 +88,20 @@ def solve_system(A, method):
     return x, sol_error(x, true_x)
 
 def main():
-    A = csc_matrix(mmread('./matrici/mtx_files/non-simmetrica-23451.mtx'))
-    print("> Done reading!")
-
+    A = csc_matrix(mmread('./matrici/mtx_files/non-simmetrica-46902.mtx'))
+    start = time.clock()
+    P = sla.spilu(A, drop_tol=1e-5)
+    M = sla.LinearOperator(A.shape, P.solve)
     sol, err = solve_system(A, sla.bicgstab)
-    print(">>  Soluzione: ", sol[0:3], " ...")
+    end = time.clock()
+
+    true_x = list(xrange(0, 46902))
+    print(">>  Soluzione (reale):", true_x[0], true_x[1], "...", 
+          true_x[-2], true_x[-1])
+    print(">>  Soluzione (approx): ", sol[0], sol[1], "...", 
+          sol[-2], sol[-1])
     print(">>  Errore: ", err)
+    print(">>  Tempo:", end - start, " secondi")
 
 if __name__ == "__main__":
     main()
