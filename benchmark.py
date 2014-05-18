@@ -19,15 +19,16 @@ from scipy.sparse import *
 from scipy.io import mmread
 import scipy.sparse.linalg as sla
 
-methods = (sla.spsolve,     # diretto
-           # sla.bicg,        # BIConjugate Gradient
-           sla.bicgstab,    # BIConjugate Gradient Stabilized
-           # sla.cg,          # Conjugate Gradient
-           sla.cgs,         # Conjugate Gradient Squared
-           sla.gmres,       # Generalized Minimal Residual
-           sla.lgmres,      # LGMRES 
-           # sla.minres,      # Minimal Residual
-           # sla.qmr,         # Quasi-minimal Residual
+methods = (sla.spsolve,         # diretto standard
+           petulant.diretto_lu, # diretto con LU
+           # sla.bicg,          # BIConjugate Gradient
+           sla.bicgstab,        # BIConjugate Gradient Stabilized
+           # sla.cg,            # Conjugate Gradient
+           sla.cgs,             # Conjugate Gradient Squared
+           sla.gmres,           # Generalized Minimal Residual
+           sla.lgmres,          # LGMRES 
+           # sla.minres,        # Minimal Residual
+           # sla.qmr,           # Quasi-minimal Residual
 
            # bicg non supporta precondizionatore via LinearOperator
            # minres non converge alla soluzione 
@@ -106,9 +107,7 @@ read_matrices()
 print('> done reading!\n')
 
 test_1('simm')
-print("\n\n***** Unsymmetric Matrices *****\n")
 
-test_1('unsymm')        
 
 
 

@@ -36,23 +36,14 @@ def solve_system(A, method):
     b = A.dot(true_x)
 
     # solve Ax = b and check solution error
-    if method == sla.spsolve:        # direct method
-        start = time.clock()
+    # diretti
+    if method in [sla.spsolve, diretto_lu]:
         x = method(A, b)
-        elapsed = time.clock() - start
         print("\t" + method.func_name + " solved " + 
-            str(size) + " " + str(elapsed))
+            str(size))
 
-        # PROVO QUESTO METODO DIRETTO ULTERIORE
-        # start = time.clock()
-        # lu = sla.splu(A)
-        # x = lu.solve(b)
-        # elapsed = time.clock() - start
-        # print("\t" + "splu+solve" + " solved " + 
-        #     str(size)+ " " + str(elapsed))
-
-
-    else:                              # iterative methods
+    # iterativi
+    else:                             
         # per accellerare la convergenza dei metodi iterativi
         # dobbiamo passare un precondizionatore (una matrice M,
         # che approssima l'inversa di A)
@@ -86,6 +77,17 @@ def solve_system(A, method):
                   str(size))
 
     return x, sol_error(x, true_x)
+
+
+
+def diretto_lu(A, b):
+    lu = sla.splu(A)
+    x = lu.solve(b)
+    return x
+
+def test_altro_diretti(A, b):
+    # Implement me :D
+    return
 
 def main():
     A = csc_matrix(mmread('./matrici/mtx_files/non-simmetrica-46902.mtx'))
