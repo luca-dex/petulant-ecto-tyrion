@@ -5,6 +5,8 @@
 \usepackage{amsmath, amsfonts, amssymb}
 \usepackage{graphicx}
 
+\usepackage{parskip}
+
 \author{L. De Sano, A. Donizetti, M. Scotti}
 \title{Risoluzione di sistemi lineari sparsi \\con Python e Scipy}
 \date{Maggio 2014}
@@ -13,14 +15,32 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-Descriviamo l'utilizzo del linguaggio Python e di una sua libreria denominata \emph{scipy} per la risoluzione di sistemi lineari sparsi (ovvero aventi la matrice dei coefficienti associata sparsa).
+Descriviamo l'utilizzo del linguaggio Python e di un ambiente di librerie denominato \emph{Scipy} per la risoluzione di sistemi lineari sparsi.
 \end{abstract}
 
 \section*{Python e Scipy}
 
+In questa sezione diamo una descrizione del linguaggio di programmazione (Python) e dell'ambiente di librerie per il calcolo scientifico (Scipy) utilizzati nel progetto.
+
 \subsection*{Python}
-% perchè python
-% caratteristiche e storia del linguaggio python
+
+Python\footnote{\texttt{www.python.org}} è un linguaggio di programmazione open-source, \emph{general-purpose} e di alto livello che supporta vari paradigmi di programmazione (tra cui imperativo, ad oggetti, funzionale). Dinamico in natura e con una sintassi che facilita la scrittura di codice mantenibile e leggibile, è considerato particolarmente adatto per lo sviluppo rapido di applicazioni software e/o di scripting.
+
+Nella scelta del linguaggio di programmazione da utilizzare per l'esecuzione dei test proposti sui sistemi lineari sparsi, abbiamo scelto di tenere conto delle seguenti caratteristiche:
+\begin{itemize}
+	\item \textbf{rapidità di sviluppo}: il linguaggio deve permettere lo sviluppo rapido di codice relativamente poco strutturato 		(in definitiva qualche centinaio di righe di codice che effettuano il setup delle librerie ed eseguono una serie di test);
+	\item \textbf{maturità del linguaggio}: il linguaggio deve essere diffuso, ben supportato su varie piattaforme di computazione, 	semplice da installare e ben documentato;
+	\item \textbf{disponibilità di librerie}: il linguaggio deve essere dotato di una libreria per il calcolo scientifico (e in particolar modo per la manipolazione di matrici sparse) ben testata e ben documentata (sia a livello di documentazione primaria, sia per quanto riguarda la disponibilità di materia esterno come tutorial e discussioni riguardando problemi e modalità d'utilizzo della libreria stessa);
+	\item \textbf{performance}: il linguaggio (e le sue librerie) devono fornire gli strumenti adatti a performare computazioni di 		natura pesantamente numerica in maniera efficiente (ovvero il linguaggio di per sé non deve astrarre troppo dall'architettura    	hardware del calcolatore, o qualora lo faccia deve fornire un'interfaccia che consenta la chiamata di procedure di basso 				livello, ad esempio scritte in altri linguaggi di programmazione);
+\end{itemize}
+
+Considerato il requisito sulla rapidità di sviluppo, abbiamo deciso di escludere in prima battuta l'utilizzo di alcuni dei linguaggi compilati tipicamente usati in ambito computazione scientifica (C, C++, FORTRAN), e di orientarci sulla categoria dei linguaggi dinamici (in genere molto meglio versati in ambito scripting e software prototyping). Poiché tutti e tre i componenti del gruppo avevano esperienza pregressa in fatto di sviluppo Python, è stato deciso di prendere in considerazione l'utilizzo di tale linguaggio.
+
+Per quanto riguarda la maturità dell'ambiente di programmazione, è fuori di dubbio che il Python soddisfi il requisito sopracitato: il linguaggio è diffusamente utilizzato, ben documentato, ben supportato e correntemente attivamente sviluppato. Decisamente ben pubblicizzata è anche l'esistenza di una ambiente di programmazione adatto alla computazione scientifica (Scipy), su cui ci soffermeremo nella sezione successiva. 
+
+L'ultimo punto poteva essere problematico: è noto come i linguaggi dinamici (solitamente interpretati, come lo è il Python) tipicamente hanno la peggio nel confronto con i linguaggi compilati in termini \emph{performances}\footnote{Questo è ancora più vero per codice dinamico scritto rapidamente e senza che la questione performances sia stata considerata accuratamente durante lo sviluppo}. Per questo motivo, nella scelta delle librerie esterne da utilizzarsi per la manipolazione di matrici, abbiamo avuto cura di utilizzare un ambiente di programmazione (Scipy, appunto) che non fosse stato completamente scritto in Python puro, ma che mettesse invece a disposizione un'interfaccia Python su delle librerie \emph{high-performances} scritte in altri linguaggi, e opportunamente impacchettate in \emph{wrappers} Python.
+
+
 % utilizzo in ambito computazione scientifica
 % pro \ contro
 
