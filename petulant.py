@@ -53,7 +53,7 @@ def solve_system(A, method):
         except Exception as err:
             print("\t", err)
             print("\tPorta le tue sporche matrici singolari altrove...")
-            return None, "NA"
+            return None, "nan"
 
         M = sla.LinearOperator(size, P.solve)
 

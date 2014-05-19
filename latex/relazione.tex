@@ -42,7 +42,7 @@ L'ultimo punto è l'unico che avrebbe potuto rivelarsi problematico: è noto com
 
 
 \subsection*{Scipy}
-Scipy\footnote{\texttt{scipy.org}} è un ecosistema di librerie \emph{open-source} pensate per la scrittura di codice nell'ambito della computazione scientifica. Consiste in una serie di pacchetti (strettamente integrati tra loro) che implementano funzionalità di manipolazione array multidimensionali (Numpy), calcolo numeroco ed ottimizzazione (Scipy-library), realizzazione di grafici e schemi (Matplotlib) e computazioni simboliche (Sympy).
+Scipy\footnote{\texttt{scipy.org}} è un ecosistema di librerie \emph{open-source} pensate per la scrittura di codice nell'ambito della computazione scientifica. Consiste in una serie di pacchetti (strettamente integrati tra loro) che implementano funzionalità di manipolazione array multidimensionali (Numpy), calcolo numerico ed ottimizzazione (Scipy-library), realizzazione di grafici e schemi (Matplotlib) e computazioni simboliche (Sympy).
 
 Come anticipato nella sezione precedente, per eseguire computazioni numericamente intensive scritte in Python a livelli di \emph{performances} accettabili è necessario delegare la maggior parte delle operazioni di basso livello a librerie specializzate sviluppate in linguaggi più adatti a tale compito. Scipy non fa eccezione e, pur mantenendo un'interfaccia di alto livello, esegue buona parte delle computazioni numeriche affidandosi a del codice macchina che gira al di fuori dell'interprete Python scritto in \texttt{C} e in \texttt{FORTRAN}. 
 
@@ -65,14 +65,9 @@ Proprio a causa di queste dipendenze esterne, l'installazione di Scipy è maggio
 Le dipendenze esterne vanno anche a compromettere leggermente la portabilità del linguaggio: se è quasi garantito che del codice che utilizza solamente la libreria standard sia in grado di girare su sistemi diversi, abbiamo riscontrato invece delle inconsistenze (delle quali parleremo in seguito) nell'esecuzione su calcolatori differenti di test che utilizzano codice Scipy. 
 
 
-% descrizione generale
-% cosa contiene e cosa fa
-% come si installa
-% come è documentato
-% il progetto è attivo [dati committs / mailing lists]
-
-
 \section*{Risoluzione di sistemi sparsi}
+
+In questa sezione diamo una descrizione di come abbiamo implementato quanto richiesto. Il lavoro si è svolto sostanzialmente in due fasi; la prima è stata la scelta del formato con cui rappresentare le matrici fornite e la seconda è stata l'implementazione delle funzionalità per usare le librerie di risoluzione dei sistemi lineari ed analizzarne gli esiti. Segue una descrizione delle problematiche incontrate.
 
 \subsection*{Lettura dei file e memorizzazione}
 % performance parser hand-made vs mmread integrato
