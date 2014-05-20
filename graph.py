@@ -69,6 +69,7 @@ P.xticks(base + width, tuple(x))
 #
 
 P.figure()
+ax = P.gca()
 
 miter = [v for v in chiavi if 'simm' in v and 'spsolve' not in v and 'times' in v]
 
@@ -77,6 +78,7 @@ for i in miter:
 	P.plot(base, salvati[i], label=title)
 
 P.legend(loc='best')
+ax.set_yscale('log')
 P.xlabel('Numero di elementi')
 P.ylabel('Tempo di esecuzione')
 P.suptitle('Tempo di esecuzione per matrici simmetriche')
@@ -87,6 +89,7 @@ P.xticks(base + width, tuple(x))
 #
 
 P.figure()
+ax = P.gca()
 
 miter = [v for v in chiavi if 'simm' in v and 'spsolve' not in v and 'errs' in v]
 
@@ -95,6 +98,7 @@ for i in miter:
 	P.plot(base, salvati[i], label=title)
 
 P.legend(loc='best')
+ax.set_yscale('log')
 P.xlabel('Numero di elementi')
 P.ylabel('Errore')
 P.suptitle('Errore per matrici simmetriche')
@@ -105,6 +109,7 @@ P.xticks(base + width, tuple(x))
 #
 
 P.figure()
+ax = P.gca()
 
 miter = [v for v in chiavi if 'unsymm' in v and 'spsolve' not in v and 'times' in v]
 
@@ -113,6 +118,7 @@ for i in miter:
 	P.plot(base, salvati[i], label=title)
 
 P.legend(loc='best')
+ax.set_yscale('log')
 P.xlabel('Numero di elementi')
 P.ylabel('Tempo di esecuzione')
 P.suptitle('Tempo di esecuzione per matrici non simmetriche')
@@ -123,6 +129,7 @@ P.xticks(base + width, tuple(x))
 #
 
 P.figure()
+ax = P.gca()
 
 miter = [v for v in chiavi if 'unsymm' in v and 'spsolve' not in v and 'errs' in v]
 
@@ -131,6 +138,7 @@ for i in miter:
 	P.plot(base, salvati[i], label=title)
 
 P.legend(loc='best')
+ax.set_yscale('log')
 P.xlabel('Numero di elementi')
 P.ylabel('Errore')
 P.suptitle('Errore per matrici non simmetriche')
