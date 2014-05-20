@@ -24,6 +24,15 @@ import time
 def sol_error(x, true_x):
     return np.linalg.norm(true_x - x) / np.linalg.norm(true_x)
 
+current_x = None
+def callback_func(xk):
+    true_x = list(xrange(0, len(xk)))
+    global current_x
+    current_x = xk
+    if sol_error(xk, true_x) < 1e-6:
+        raise Exception("Finito!")
+
+
 def solve_system(A, method):
     """
     Solve linear system Ax = b with A matrix in filename and
@@ -41,6 +50,7 @@ def solve_system(A, method):
         x = method(A, b)
         print("\t" + method.func_name + " solved " + 
             str(size))
+        return x, sol_error(x, true_x)
 
     # iterativi
     else:                             
@@ -57,28 +67,27 @@ def solve_system(A, method):
 
         M = sla.LinearOperator(size, P.solve)
 
-        # dobbiamo settare a mano la tolleranza in modo da avere
-        # errore intorno a 1e-6
-        toll = {
-            'bicg':     1e-6,
-            'bicgstab': 1e-15,
-            'cg':       1e-6,
-            'cgs':      1e-14,
-            'gmres':    1e-18,
-            'lgmres':   1e-12,
-            'minres':   1e-13,
-            'qmr':      1e-6
-        }
-
-        x, conv = method(A, b, tol=toll[str(method.func_name)], M=M)
-
-        if conv == 0:
-            print("\t" + method.func_name + " converged on " + 
-                  str(size))
-
-    return x, sol_error(x, true_x)
-
-
+        global current_x
+        current_x = None
+        try: 
+            x, status = method(A, 
+                               b, 
+                               tol=1e-15, 
+                               M=M,
+                               maxiter=250,
+                               callback=callback_func)
+        except Exception:
+            print("\t" + method.func_name + " converged on " +  str(size))
+            return current_x, sol_error(current_x, true_x)
+        else:
+            if status != 0:
+                print("\t" + method.func_name + " DIDN'T converge on " +
+                      str(size) + " in less than 250 iterations")
+                return current_x, sol_error(x, true_x)
+            else:
+                print("\t" + method.func_name + " converged on " +
+                      str(size))
+                return current_x, sol_error(x, true_x)
 
 def diretto_lu(A, b):
     lu = sla.splu(A)
