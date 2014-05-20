@@ -34,30 +34,32 @@ for test in os.listdir('benchmarks_results'):
 #
 
 P.figure()
-width = 1600
-P.bar(x, salvati['test1simm times_spsolve'], width=width, color='b', label='simmetriche')
-P.bar(x + width, salvati['test1unsymm times_spsolve'], width=width, color='r', label='non simmetriche')
+width = 0.2
+base = np.arange(len(x))
+P.bar(base, salvati['test1simm times_spsolve'], width=width, color='b', label='simmetriche')
+P.bar(base + width, salvati['test1unsymm times_spsolve'], width=width, color='r', label='non simmetriche')
 
-P.legend()
+P.legend(loc='best')
 
 P.xlabel('Numero di elementi')
 P.ylabel('Tempo (s)')
 P.suptitle('Tempo con metodo diretto')
+P.xticks(base + width, tuple(x))
 
 #
 # errore relativo
 #
 
 P.figure()
-width = 1600
-P.bar(x, salvati['test1simm errs_spsolve'], width=width, color='b', label='simmetriche')
-P.bar(x + width, salvati['test1unsymm errs_spsolve'], width=width, color='r', label='non simmetriche')
+P.bar(base, salvati['test1simm errs_spsolve'], width=width, color='b', label='simmetriche')
+P.bar(base + width, salvati['test1unsymm errs_spsolve'], width=width, color='r', label='non simmetriche')
 
-P.legend()
+P.legend(loc='best')
 
 P.xlabel('Numero di elementi')
 P.ylabel('Errore')
 P.suptitle('Errore relativo con metodo diretto')
+P.xticks(base + width, tuple(x))
 
 P.show()
 
