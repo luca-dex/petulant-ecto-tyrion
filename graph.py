@@ -4,15 +4,17 @@ import pylab as P
 import os
 import StringIO
 
-
-
-#apro file in cartella
-
+# dimensioni delle matrici
 x = None
+
+# ogni riga dei file al posto giusto
 salvati = {}
+
+# chiavi di salvati
 chiavi = []
 
 
+# smacinamento cartelle coi risultati
 for test in os.listdir('benchmarks_results'):
 	with open('benchmarks_results/' + test) as t:
 		a = t.readline()
@@ -29,13 +31,15 @@ for test in os.listdir('benchmarks_results'):
 				chiavi.append(key)
 				salvati[key] = value
 
+width = 0.2
+base = np.arange(len(x))
+
 #
 # tempo di esecuzione
 #
 
 P.figure()
-width = 0.2
-base = np.arange(len(x))
+
 P.bar(base, salvati['test1simm times_spsolve'], width=width, color='b', label='simmetriche')
 P.bar(base + width, salvati['test1unsymm times_spsolve'], width=width, color='r', label='non simmetriche')
 
@@ -55,11 +59,86 @@ P.bar(base, salvati['test1simm errs_spsolve'], width=width, color='b', label='si
 P.bar(base + width, salvati['test1unsymm errs_spsolve'], width=width, color='r', label='non simmetriche')
 
 P.legend(loc='best')
-
 P.xlabel('Numero di elementi')
 P.ylabel('Errore')
 P.suptitle('Errore relativo con metodo diretto')
 P.xticks(base + width, tuple(x))
 
+#
+# comparazione tempi matrici simmetriche
+#
+
+P.figure()
+
+miter = [v for v in chiavi if 'simm' in v and 'spsolve' not in v and 'times' in v]
+
+for i in miter:
+	title = i.split('_')[1]
+	P.plot(base, salvati[i], label=title)
+
+P.legend(loc='best')
+P.xlabel('Numero di elementi')
+P.ylabel('Tempo di esecuzione')
+P.suptitle('Tempo di esecuzione per matrici simmetriche')
+P.xticks(base + width, tuple(x))
+
+#
+# comparazione errori matrici simmetriche
+#
+
+P.figure()
+
+miter = [v for v in chiavi if 'simm' in v and 'spsolve' not in v and 'errs' in v]
+
+for i in miter:
+	title = i.split('_')[1]
+	P.plot(base, salvati[i], label=title)
+
+P.legend(loc='best')
+P.xlabel('Numero di elementi')
+P.ylabel('Errore')
+P.suptitle('Errore per matrici simmetriche')
+P.xticks(base + width, tuple(x))
+
+#
+# comparazione tempi matrici non simmetriche
+#
+
+P.figure()
+
+miter = [v for v in chiavi if 'unsymm' in v and 'spsolve' not in v and 'times' in v]
+
+for i in miter:
+	title = i.split('_')[1]
+	P.plot(base, salvati[i], label=title)
+
+P.legend(loc='best')
+P.xlabel('Numero di elementi')
+P.ylabel('Tempo di esecuzione')
+P.suptitle('Tempo di esecuzione per matrici non simmetriche')
+P.xticks(base + width, tuple(x))
+
+#
+# comparazione errori matrici non simmetriche
+#
+
+P.figure()
+
+miter = [v for v in chiavi if 'unsymm' in v and 'spsolve' not in v and 'errs' in v]
+
+for i in miter:
+	title = i.split('_')[1]
+	P.plot(base, salvati[i], label=title)
+
+P.legend(loc='best')
+P.xlabel('Numero di elementi')
+P.ylabel('Errore')
+P.suptitle('Errore per matrici non simmetriche')
+P.xticks(base + width, tuple(x))
+
+
+#
+# stampa tutto
+#
 P.show()
 
