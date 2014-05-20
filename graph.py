@@ -144,6 +144,45 @@ P.ylabel('Errore')
 P.suptitle('Errore per matrici non simmetriche')
 P.xticks(base + width, tuple(x))
 
+#
+# comparazione tempi iterativa simmetrica
+#
+P.figure()
+
+miter = [v for v in chiavi if 'simm' in v and 'spsolve' not in v and 'times' in v]
+nomiMetodi = [n.split('_')[1] for n in miter]
+matricionaSimm = np.array([])
+width = 0.6
+for i in miter:
+	matricionaSimm = np.append(matricionaSimm, salvati[i][5])
+
+base = np.arange(len(matricionaSimm))
+P.bar(base, matricionaSimm, width=width, color='b', label='simmetriche', log=True, align='center')
+
+P.xticks(base + width, tuple(nomiMetodi))
+P.xlabel('Metodo utilizzato')
+P.ylabel('Errore')
+P.suptitle('Variazione dell\'errore su matrice simmetrica con')
+
+
+#
+# comparazione tempi iterativa simmetrica
+#
+P.figure()
+
+miter = [v for v in chiavi if 'unsymm' in v and 'spsolve' not in v and 'times' in v]
+nomiMetodi = [n.split('_')[1] for n in miter]
+matricionaUnSimm = np.array([])
+for i in miter:
+	matricionaUnSimm = np.append(matricionaUnSimm, salvati[i][5])
+
+base = np.arange(len(matricionaSimm))
+P.bar(base + width, matricionaUnSimm, width=width, color='r', label='non simmetriche', log=True, align='center')
+
+P.xticks(base + width, tuple(nomiMetodi))
+P.xlabel('Metodo utilizzato')
+P.ylabel('Errore')
+P.suptitle('Variazione dell\'errore su matrice simmetrica con')
 
 #
 # stampa tutto
