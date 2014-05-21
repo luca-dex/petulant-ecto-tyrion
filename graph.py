@@ -176,7 +176,7 @@ matricionaUnSimm = np.array([])
 for i in miter:
 	matricionaUnSimm = np.append(matricionaUnSimm, salvati[i][5])
 
-base = np.arange(len(matricionaSimm))
+base = np.arange(len(matricionaUnSimm))
 P.bar(base + width, matricionaUnSimm, width=width, color='r', label='non simmetriche', log=True, align='center')
 
 P.xticks(base + width, tuple(nomiMetodi))
