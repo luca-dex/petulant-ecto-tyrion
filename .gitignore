@@ -3,6 +3,8 @@
 
 latex/*
 !latex/relazione.tex
+!latex/images/
+!latex/images/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
