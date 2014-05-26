@@ -72,8 +72,18 @@ Le dipendenze esterne vanno anche a compromettere leggermente la portabilità de
 
 In questa sezione diamo una descrizione della progettazione, della scrittura e dell'esecuzione dei test proposti. Il lavoro si è svolto sostanzialmente in due fasi: in prima battuta è stato affrontato il problema di leggere le matrici dai files e memorizzare le stesse in RAM in un formato opportuno, successivamente è stato sviluppato il codice che si occupa di chiamare i vari risolutori messi a disposizione da Scipy, misurare tempi di esecuzione ed errori sui risultati, e infine esportare i risultati.
 
+\subsection*{Metodologia di testing}
+Il codice Python che implementa i test da noi effettuati è relativamente semplice. In ordine, ciò che viene fatto è
+\begin{itemize}
+	\item Leggere le matrici dal disco (una sola volta) e immagazzinarle in RAM in un formato opportuno
+	\item Calcolare, per ogni matrice $A$, un termine noto $b$ tale che valga $A\overline{x} = b$, con $\overline{x} = (0, 1, 2, \dots)$
+	\item Risolvere il sistema lineare $Ax = b$ utilizzando i risolutori diretti e iterativi messi a disposizione da Scipy
+	\item Calcolare l'errore commesso come err = $\tfrac{\parallel \overline{x} - x \parallel}{\parallel \overline{x} \parallel}$
+	\item Stampare su file tempi di esecuzione ed errori commessi
+\end{itemize}
+
 \subsection*{Lettura dei file e memorizzazione}
-Date le dimensioni complessive dei files contenenti le matrici (circa 290 MB), una prima questione da affrontare riguarda la scelta di una modalità di lettura e costruzione delle strutture dati che sia il più efficiente possibile. In particolare, è desiderabile ottimizzare i tempi di lettura dal disco, lo spazio occupato dalle matrici in RAM, e i tempi di esecuzione dei metodi per la risoluzione dei sistemi lineari sparsi che esse rappresentano.
+Date le dimensioni complessive dei files contenenti le matrici (circa 290 MB), una prima questione da affrontare è stata la scelta di una modalità di lettura e costruzione delle strutture dati che sia il più efficiente possibile. In particolare, sarebbe desiderabile ottimizzare i tempi di lettura dal disco, lo spazio occupato dalle matrici in RAM, e i tempi di esecuzione dei metodi per la risoluzione dei sistemi lineari sparsi che esse rappresentano.
 
 Per la lettura da disco ci sono (almeno) tre modi di operare:
 \begin{itemize}
@@ -91,10 +101,11 @@ Il primo (handmade, non bufferizzato) è certamente il più ingenuo. Non è stat
 & time & speed \\
 \midrule
 nonbuff & 121.56 secs & 1.56 MB/s \\
-buff & 27.38 secs & 6.92 MB/S \\
+buff & 27.38 secs & 6.92 MB/s \\
 \texttt{mmread} & 12.34 secs & 15.62 MB/s \\
 \bottomrule
 \end{tabular}
+\caption{tempi e velocità di importazione complessivi delle 6 matrici}
 \end{figure}
 
 \begin{figure}[!ht]
@@ -102,14 +113,34 @@ buff & 27.38 secs & 6.92 MB/S \\
 \includegraphics[scale=0.52]{images/lettura} 
 \end{figure}
 
-In grafico sono riportati i risultati di tre test di lettura eseguiti sulle sei matrici non simmetriche. Come si può vedere, uno script che sia ben progettato (e che bufferizzi le letture) è equiparabile in velocità di lettura al metodo \texttt{mmread} fornito da \texttt{scipy}, mentre uno non particolarmente ben scritto scala decisamente male rispetto all'aumentare delle dimensioni dei files.
+Sono riportati i risultati di tre test di lettura eseguiti sulle sei matrici non simmetriche. Come si può vedere, uno script che sia ben progettato (e che bufferizzi le letture) è equiparabile in velocità di lettura al metodo \texttt{mmread} fornito da \texttt{scipy}, mentre uno non particolarmente ben scritto scala decisamente male rispetto all'aumentare delle dimensioni dei files.
 
 In fase di test dei metodi risolutivi abbiamo infine optato per l'utilizzo di \texttt{mmread} (il più rapido), dopo aver convertito le matrici scaricate nel formato Matrix Market e averne salvato i file.
 
+Una volta letti i dati dal disco, è necessario scegliere il formato con cui memorizzare la matrice in RAM. Scipt ne mette a disposizione diversi: \texttt{coo} (coordinate format), \texttt{csc / crs} (compressed sparse columns/rows format), \texttt{dok} (dictionary of keys), e altri. Inizialmente avevamo optato per il formato \texttt{coo} (perché il più semplice su cui mappare il formato dei file di testo contenenti le matrici), ma degli \texttt{SparseEfficiencyWarning} sollevati dall'ambiente durante la risoluzione dei sistemi ci hanno successivamente spinto a convertire le matrici in formato \texttt{csc}, per motivi implementativi il preferito dai risolutori di sistemi integrati in Scipy. Peraltro la conversione si riduce semplicemente alla chiamata di un metodo di casting in fase di importazione.
+
 \subsection*{Metodi diretti}
-% metodi disponibile
-% tempi di esecuzione
-% errori sulla soluzione
+Il principale metodo diretti messo a disposizione da Scipy per la risoluzione di sistemi lineari sparsi è rappresentato da \texttt{scipy.sparse.linalg.spsolve}. La funzione si tratta in realtà di un wrapper Python attorno a UMFPACK e superLU, e richiede uno sforzo di configurazione minimo. In effetti è sufficiente passare al metodo la matrice sparsa e il vettore dei termini noti, e la funzione si occupa di configurare le librerie C sottostanti in maniera ottimale.
+
+Oltre a \texttt{spsolve}, abbiamo voluto testare anche un procedimento di risoluzione "manuale": una semplice fattorizzazione LU sulla matrice $A$ e successivo calcolo di $x$ operando sulle matrici a scala ottenute (comunque utilizzando le funzioni messe a disposizione da Scipy).
+
+\texttt{spsolve} si è rivelato più veloce del procedimento manuale (probabilmente in virtù di stratagemmi di configurazione nascosti nel wrapper). Non abbiamo invece rilevato alcuna differenza (né sui tempi necessari per la risoluzione dei sistemi, né sugli errori commessi) tra le sei matrici simmetriche definite positive e le sei matrici non simmetriche. 
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[scale=0.51]{images/tempi_diretti} 
+\end{figure}
+
+I tempi di risoluzione si sono rivelati assolutamente accettabili: pochi millisecondi per le matrici più piccole, e con \texttt{spsolve} sotto i 3 secondi anche nel caso della matrice più grande ($46902 \times 46902$, con oltre 2 milioni di nonzeri). Questo vale sia che per le matrici simmetriche che per le non-simmetriche, e da qui la presenza di un singolo grafico: non abbiamo infatti rilevato che differenze minime (probabilmente dovute a rumore nei test) tra i dati generati dai due tipi di matrici.
+
+Gli errori commessi dai metodi diretti sono vicino alla precisione macchina per le matrici più piccole, mentre sono di diversi ordini di grandezza più grandi per le ultime matrici. In ogni caso entrambi i metodi riescono a mantenere l'errore al di sotto del valore di $10^-6$ richiesto dal testo del progetto. Va comunque fatto notare che \texttt{spsolve} e i metodi per la fattorizzazione LU non mettono a disposizione strumenti per controllare l'errore commesso in fase di risoluzione.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[scale=0.51]{images/errori_diretti} 
+\end{figure}
+
+
 
 \subsection*{Metodi iterativi}
 % metodi disponibili
