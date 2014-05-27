@@ -106,7 +106,7 @@ def test_1(type):
 read_matrices()
 print('> done reading!\n')
 
-test_1('simm')
+test_1('symm')
 print('> done simmetriche!\n')
 
 test_1('unsymm')

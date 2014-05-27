@@ -74,20 +74,20 @@ def solve_system(A, method):
                                b, 
                                tol=1e-15, 
                                M=M,
-                               maxiter=250,
+                               maxiter=350,
                                callback=callback_func)
         except Exception:
             print("\t" + method.func_name + " converged on " +  str(size))
             return current_x, sol_error(current_x, true_x)
+
+        if status != 0:
+            print("\t" + method.func_name + " DIDN'T converge on " +
+                  str(size) + " in less than 250 iterations")
+            return current_x, sol_error(x, true_x)
         else:
-            if status != 0:
-                print("\t" + method.func_name + " DIDN'T converge on " +
-                      str(size) + " in less than 250 iterations")
-                return current_x, sol_error(x, true_x)
-            else:
-                print("\t" + method.func_name + " converged on " +
-                      str(size))
-                return current_x, sol_error(x, true_x)
+            print("\t" + method.func_name + " converged on " +
+                  str(size))
+            return current_x, sol_error(x, true_x)
 
 def diretto_lu(A, b):
     lu = sla.splu(A)

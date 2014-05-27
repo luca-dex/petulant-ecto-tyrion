@@ -8,9 +8,8 @@
 \usepackage{parskip}
 
 \author{L. De Sano, A. Donizetti, M. Scotti}
-\title{Risoluzione di sistemi lineari sparsi \\con Python e Scipy}
+\title{Risoluzione di sistemi lineari sparsi\\con Python e Scipy}
 \date{Maggio 2014}
-
 
 \begin{document}
 \maketitle
@@ -59,9 +58,9 @@ La sezione dove sono discusse tematiche relative all'utilizzo del progetto è mo
 
 \subsection*{Scipy per la soluzione di sistemi sparsi}
 
-Per la risoluzione dei sistemi lineari sparsi abbiamo utilizzato il modulo \texttt{scipy.sparse} (per l'importazione e la manipolazione di matrici sparse) e il sottomodulo \texttt{scipy.sparse.linalg} (che contiene i risolutori diretti e iterativi specializzati per operare su matrici sparse). Entrambi i moduli utilizzano a loro volta il pacchetto \texttt{numpy}.
+Per la risoluzione di sistemi lineari sparsi è stato utilizzato il modulo \texttt{scipy.sparse} (per l'importazione e la manipolazione di matrici sparse) e il sottomodulo \texttt{sparse.linalg} (che contiene i risolutori diretti e iterativi specializzati per operare su matrici sparse). Entrambi i moduli utilizzano a loro volta il pacchetto \texttt{numpy}.
 
-Per la manipolazione di matrici, \texttt{numpy} utilizza prevalentemente codice C e chiamate a ATLAS\footnote{Implementazione \emph{open-source} di BLAS} e LAPACK\footnote{Linear Algebra PACKage, scritto in FORTRAN}, mentre il modulo \texttt{scipy.sparse.linalg} utilizza UMFPACK\footnote{Unsymmetric multifrontal sparse LU factorization package (\texttt{cise.ufl.edu/research/sparse/umfpack}), scritto in C e chiamato tra l'altro dall'operatore $\setminus$ di Matlab quando le matrici sono sparse} e SuperLU\footnote{Supernodal LU (\texttt{crd-legacy.lbl.gov/$\sim$xiaoye/SuperLU})} per i risolutori diretti. I risolutori iterativi sono implementati in Python puro, ma possono venire precondizionati tramite fattorizzazioni LU parziali calcolate da SuperLU, e risultano quindi in ogni caso abbastanza veloci.
+Per la manipolazione di matrici, \texttt{numpy} utilizza prevalentemente codice C e chiamate a ATLAS\footnote{Implementazione \emph{open-source} di BLAS} e LAPACK\footnote{Linear Algebra PACKage, scritto in FORTRAN}, mentre il modulo \texttt{scipy.sparse.linalg} utilizza UMFPACK\footnote{Unsymmetric multifrontal sparse LU factorization (\texttt{cise.ufl.edu/research/sparse/umfpack}), scritto in C e chiamato tra l'altro dall'operatore $\setminus$ di Matlab quando le matrici sono sparse} e SuperLU\footnote{Supernodal LU (\texttt{crd-legacy.lbl.gov/$\sim$xiaoye/SuperLU})} per i risolutori diretti. I risolutori iterativi sono implementati in Python puro, ma possono venire precondizionati tramite fattorizzazioni LU parziali calcolate da SuperLU, e risultano quindi in ogni caso abbastanza veloci.
 
 Proprio a causa di queste dipendenze esterne, l'installazione di Scipy è maggiormente soggetta a problemi rispetto a quanto accade solitamente con altre librerie Python. Nonostante l'ambiente Scipy sia ben strutturato a livello di pacchetti e supportato, la modalità di installazione più semplice prevede l'utilizzo almeno di un \emph{package-manager} di sistema (tipicamente presenti su sistemi Linux, vedi aptitude), che si occupa anche di installare e linkare pacchetti esterni (implementazioni BLAS, UMFPACK e altri). La presenza di queste librerie è fondamentale per il funzionamento di Scipy, e non è del tutto banale configurare correttamente il sistema per usarle nel caso si scelga di effettuare un'installazione manuale.
 
@@ -110,7 +109,7 @@ buff & 27.38 secs & 6.92 MB/s \\
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[scale=0.52]{images/lettura} 
+\includegraphics[scale=0.51]{images/lettura} 
 \end{figure}
 
 Sono riportati i risultati di tre test di lettura eseguiti sulle sei matrici non simmetriche. Come si può vedere, uno script che sia ben progettato (e che bufferizzi le letture) è equiparabile in velocità di lettura al metodo \texttt{mmread} fornito da \texttt{scipy}, mentre uno non particolarmente ben scritto scala decisamente male rispetto all'aumentare delle dimensioni dei files.
@@ -128,24 +127,45 @@ Oltre a \texttt{spsolve}, abbiamo voluto testare anche un procedimento di risolu
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[scale=0.51]{images/tempi_diretti} 
+\includegraphics[scale=0.50]{images/tempi_diretti} 
 \end{figure}
 
-I tempi di risoluzione si sono rivelati assolutamente accettabili: pochi millisecondi per le matrici più piccole, e con \texttt{spsolve} sotto i 3 secondi anche nel caso della matrice più grande ($46902 \times 46902$, con oltre 2 milioni di nonzeri). Questo vale sia che per le matrici simmetriche che per le non-simmetriche, e da qui la presenza di un singolo grafico: non abbiamo infatti rilevato che differenze minime (probabilmente dovute a rumore nei test) tra i dati generati dai due tipi di matrici.
+I tempi di risoluzione sono assolutamente accettabili: pochi millisecondi per le matrici più piccole, e con \texttt{spsolve} sotto i 3 secondi anche nel caso della matrice più grande ($46902 \times 46902$, con oltre 2 milioni di nonzeri). Questo vale sia che per le matrici simmetriche che per le non-simmetriche, e da qui la presenza di un singolo grafico: non abbiamo infatti rilevato che differenze minime (probabilmente dovute a rumore nei test) tra i dati generati dai due tipi di matrici.
 
 Gli errori commessi dai metodi diretti sono vicino alla precisione macchina per le matrici più piccole, mentre sono di diversi ordini di grandezza più grandi per le ultime matrici. In ogni caso entrambi i metodi riescono a mantenere l'errore al di sotto del valore di $10^-6$ richiesto dal testo del progetto. Va comunque fatto notare che \texttt{spsolve} e i metodi per la fattorizzazione LU non mettono a disposizione strumenti per controllare l'errore commesso in fase di risoluzione.
 
-\begin{figure}[!ht]
+\begin{figure}[!H]
 \centering
-\includegraphics[scale=0.51]{images/errori_diretti} 
+\includegraphics[scale=0.50]{images/errori_diretti} 
 \end{figure}
 
 
-
 \subsection*{Metodi iterativi}
-% metodi disponibili
-% tempi di esecuzione
-% errori nella soluzione
+Scipy mette a disposizione parecchi metodi iterativi utilizzabili per la risoluzione di sistemi lineari sparsi. Nei nostri test abbiamo provato ad utilizzare i seguenti:
+\begin{itemize}
+	\item \texttt{sparse.linalg.bicstab} (BIConjugate Gradient STABilized)
+	\item \texttt{sparse.linalg.cg} (Conjugate Gradient)
+	\item \texttt{sparse.linalg.cgs} (Conjugate Gradient Squared)
+	\item \texttt{sparse.linalg.lgmres} (L. Generalized Minimal RESidual)
+	\item \texttt{sparse.linalg.minres} (MINimum RESidual)
+\end{itemize}
+
+Nonostante i metodi sopra elencati sia stato in genere possibile ottenere soluzioni approssimate abbastanza buone e in tempi ragionevoli, configurare correttamente i risolutori non è del tutto banale.
+
+In primo luogo, sebbene tutte le funzioni diano la possibilità di passare un parametro opzionale \texttt{tol}, questo non è utilizzabile per controllare in maniera affidabile l'errore commesso sulla soluzione. Il parametro è documentato come
+
+\begin{quote}
+\textbf{tol}: \texttt{float} \\
+Tolerance to achieve. The algorithm terminates when either the relative or the absolute residual is below \texttt{tol}.
+\end{quote}
+
+La documentazione non fornisce tuttavia alcuna spiegazione riguardo il modo in cui la tolleranza della soluzione corrente viene calcolata, e settare \texttt{tol = 1e-6} porta ad ottenere errori estremamente variabili: sotto $10^{-9}$ per le matrici più piccole, e nell'ordine dei $10^{-1}$ per le matrici più grandi. Errori che peraltro sembrano dipendere fortamente dal metodo iterativo utilizzato: ad esempio a \texttt{bicstab} basta un \texttt{tol = 1e-8} per risolvere tutti i sistemi mantenendo l'errore al di sotto di $10^{-6}$, mentre altri metodi (pur convergenti correttamente!) richiedono di settare \texttt{tol = 1e-15}. Questo comportamento inaspettato sembrerebbe essere dovuto ad un problema nelle routines FORTRAN sottostanti, e in effetti una \emph{issue}\footnote{github.com/scipy/scipy/issues/2694l} che dettaglia sul problema è correntemente aperta su Github (dove è coordinato lo sviluppo di Scipy).
+
+Un primo modo per aggirare il problema consiste nel settare manualmente per ogni metodo le tolleranze in modo che l'errore sulla matrice più grande sia al di sotto del valore $10^{-6}$, ma questo (oltre a richiedere un certo numero di esperimenti) porta ad altri problemi. Ad esempio, settando \texttt{tol = 1e-15} con \texttt{cg} porta ad un errore finale dell'ordine di $10^{-7}$ sulla matrice $46902 \times 46902$, ma ad una precisione invece eccessiva sulla matrice più piccola $1891 \times 1891$, andando di fatto a impedire una convergenza rapida.
+
+Il problema è stato infine risolto utilizzando un parametro opzionale messo a disposizione da Scipy: \texttt{callback}. Le funzioni che implementano i metodi iterativi consentono al chiamante di passare una funzione di callback che viene chiamata al termine di ogni iterazione, con parametro \texttt{xk}, la soluzione corrente del sistema. Per ottenere degli errori uniformi sulle matrici di tutte le dimensioni è quindi possibile passare come callback una funzione che controlla se l'errore corrente è sotto il valore $10^{-6}$, e in caso positivo salva il valore di \texttt{xk} e solleva un'eccezione. L'eccezione non può venir catturata al livello della funzione Scipy, che quindi termina l'esecuzione e solleva a sua volta l'eccezione al livello superiore (quello dove c'è il codice dei test). A quel punto l'eccezione viene catturata, e la soluzione ottenuta salvata come soluzione finale della procedura.
+
+
 
 \subsection*{Problematiche incontrate}
 % matrice quasi singolare 
