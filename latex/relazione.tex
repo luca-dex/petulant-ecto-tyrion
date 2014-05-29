@@ -217,13 +217,24 @@ tipo & dim & \verb|bicgstab| & \verb|  cg   | & \verb|  cgs  | & \verb| lgmres| 
 \label{tabella2}
 \end{figure}
 
-I tempi di esecuzione sono graficati in Figura \ref{tempi_iterativi}. Ad esempio \texttt{cgs}, che converge senza particolare problemi sui sistemi di tutte le dimensioni, non impiega più di una dozzina di secondi per terminare la computazione sulla matrice più grande. Anche i metodi che non convergono entro le 500 iterazioni sulle ultime matrici sono in grado di risolvere i sistemi lineari più piccoli, peraltro in tempi assai vicini a quelli impiegati dagli altri metodi. Questo è probabilmente dovuto al fatto che sulle prime matrici i tempi di esecuzione sono dominati dal tempo di calcolo del precondizionatore (LU approssimata, uguale per tutti i metodi da noi testati). Man mano che le dimensioni del problema aumentano, il fattore dominante diventa il tempo impiegato nelle iterazioni del metodo, e solo i metodi più performanti si dimostrano in grado di convergere in tempi brevi. 
+I tempi di esecuzione sono graficati in Figura \ref{tempi_iterativi}. Ad esempio \texttt{cgs}, che converge senza particolare problemi sui sistemi di tutte le dimensioni, non impiega più di 10 secondi per terminare la computazione sulla matrice più grande. Anche i metodi che non convergono entro le 500 iterazioni sulle ultime matrici sono in grado di risolvere i sistemi lineari più piccoli, peraltro in tempi assai vicini a quelli impiegati dagli altri metodi. Questo è probabilmente dovuto al fatto che sulle prime matrici i tempi di esecuzione sono dominati dal tempo di calcolo del precondizionatore (LU approssimata, uguale per tutti i metodi da noi testati). Man mano che le dimensioni del problema aumentano, il fattore dominante diventa il tempo impiegato nelle iterazioni del metodo, e solo i metodi più performanti si dimostrano in grado di convergere in tempi brevi. 
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[scale=0.51]{images/tempi_iterativi} 
 \caption{Tempi di risoluzione (simmetriche) con i metodi iterativi}
 \label{tempi_iterativi}
+\end{figure}
+
+Non riportiamo il grafico dei tempi necessari per la soluzione dei sistemi derivati dalle matrici asimmetriche perché i valori ottenuti dai test si discostano di pochissimo (meno del 5\%) da quelli rilevati per le matrici simmetriche definite positive. Rileviamo quindi che i metodi iterativi messi a disposizione da Scipy non sembrano discriminare tra le due tipologie di matrici coinvolte nei test (quantomeno per le matrici delle dimensioni da noi testate). Sia i tempi necessari alla convergenza che la capacità stessa di convergere sono del tutto analoghi, per i vari metodi, tra matrici aventi le stesse dimensioni.
+
+Riportiamo anche, al fine di fare un confronto complessivo tra i metodi testati, un grafico che contiene i dati relativi ai tempi di risoluzione e agli errori commessi sulla matrice nonsimmetrica più grande (per i metodi che hanno restituito una soluzione corretta). Quel che si nota è che per matrici sparse di dimensioni vicine a 50000$\times$50000 e con una percentuale di nonzeri intorno allo $0.1\%$, i due metodi diretti (\texttt{spsolve} e la scomposizione LU) sono i più rapidi a fornire una soluzione entro $10^{-6}$ da quella esatta. I metodi iterativi, pur riuscendo a convergere in tempi relativamente rapidi, non sono ancora competivi per matrici sparse aventi le dimensioni di quelle da noi testate.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[scale=0.50]{images/confronto} 
+\caption{Tempi ed errori sul sistema 46902$\times$46902}
+\label{confronto}
 \end{figure}
 
 \subsection*{Problematiche incontrate}
