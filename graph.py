@@ -40,7 +40,7 @@ base = np.arange(len(x))
 
 P.figure()
 
-P.bar(base, salvati['test1simm times_spsolve'], width=width, color='b', label='simmetriche')
+P.bar(base, salvati['test1symm times_spsolve'], width=width, color='b', label='simmetriche')
 P.bar(base + width, salvati['test1unsymm times_spsolve'], width=width, color='r', label='non simmetriche')
 
 P.legend(loc='best')
@@ -55,7 +55,7 @@ P.xticks(base + width, tuple(x))
 #
 
 P.figure()
-P.bar(base, salvati['test1simm errs_spsolve'], width=width, color='b', label='simmetriche')
+P.bar(base, salvati['test1symm errs_spsolve'], width=width, color='b', label='simmetriche')
 P.bar(base + width, salvati['test1unsymm errs_spsolve'], width=width, color='r', label='non simmetriche')
 
 P.legend(loc='best')
@@ -71,7 +71,7 @@ P.xticks(base + width, tuple(x))
 P.figure()
 ax = P.gca()
 
-miter = [v for v in chiavi if 'simm' in v and 'spsolve' not in v and 'times' in v]
+miter = [v for v in chiavi if 'symm' in v and 'spsolve' not in v and 'times' in v]
 
 for i in miter:
 	title = i.split('_')[1]
@@ -91,7 +91,7 @@ P.xticks(base + width, tuple(x))
 P.figure()
 ax = P.gca()
 
-miter = [v for v in chiavi if 'simm' in v and 'spsolve' not in v and 'errs' in v]
+miter = [v for v in chiavi if 'symm' in v and 'spsolve' not in v and 'errs' in v]
 
 for i in miter:
 	title = i.split('_')[1]
@@ -149,7 +149,7 @@ P.xticks(base + width, tuple(x))
 #
 P.figure()
 
-miter = [v for v in chiavi if 'simm' in v and 'spsolve' not in v and 'times' in v]
+miter = [v for v in chiavi if 'symm' in v and 'spsolve' not in v and 'times' in v]
 nomiMetodi = [n.split('_')[1] for n in miter]
 matricionaSimm = np.array([])
 width = 0.6

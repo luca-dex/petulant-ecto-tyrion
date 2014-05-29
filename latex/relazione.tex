@@ -5,7 +5,12 @@
 \usepackage{amsmath, amsfonts, amssymb}
 \usepackage{graphicx, booktabs}
 
+\usepackage{multirow}
 \usepackage{parskip}
+\usepackage{pifont}
+
+\newcommand{\yep}{\ding{51}}%
+\newcommand{\nope}{\ding{55}}%
 
 \author{L. De Sano, A. Donizetti, M. Scotti}
 \title{Risoluzione di sistemi lineari sparsi\\con Python e Scipy}
@@ -66,7 +71,6 @@ Proprio a causa di queste dipendenze esterne, l'installazione di Scipy è maggio
 
 Le dipendenze esterne vanno anche a compromettere leggermente la portabilità del linguaggio: se è quasi garantito che del codice che utilizza solamente la libreria standard sia in grado di girare su sistemi diversi, abbiamo riscontrato invece delle inconsistenze (sulle quali dettaglieremo in seguito) nell'esecuzione su calcolatori differenti di test che utilizzano codice Scipy. 
 
-
 \section*{Risoluzione di sistemi sparsi}
 
 In questa sezione diamo una descrizione della progettazione, della scrittura e dell'esecuzione dei test proposti. Il lavoro si è svolto sostanzialmente in due fasi: in prima battuta è stato affrontato il problema di leggere le matrici dai files e memorizzare le stesse in RAM in un formato opportuno, successivamente è stato sviluppato il codice che si occupa di chiamare i vari risolutori messi a disposizione da Scipy, misurare tempi di esecuzione ed errori sui risultati, e infine esportare i risultati.
@@ -84,6 +88,8 @@ Il codice Python che implementa i test da noi effettuati è relativamente sempli
 \subsection*{Lettura dei file e memorizzazione}
 Date le dimensioni complessive dei files contenenti le matrici (circa 290 MB), una prima questione da affrontare è stata la scelta di una modalità di lettura e costruzione delle strutture dati che sia il più efficiente possibile. In particolare, sarebbe desiderabile ottimizzare i tempi di lettura dal disco, lo spazio occupato dalle matrici in RAM, e i tempi di esecuzione dei metodi per la risoluzione dei sistemi lineari sparsi che esse rappresentano.
 
+\subsubsection*{Lettura da disco}
+
 Per la lettura da disco ci sono (almeno) tre modi di operare:
 \begin{itemize}
 \item \textbf{Handmade, non bufferizzato}: scrivere uno script Python che legge i dati dal disco, senza bufferizzazione, e costruisce in maniera incrementale le matrici sparse
@@ -92,6 +98,8 @@ Per la lettura da disco ci sono (almeno) tre modi di operare:
 \end{itemize}
 
 Il primo (handmade, non bufferizzato) è certamente il più ingenuo. Non è stato realmente preso in considerazione in fase di scrittura del codice, ma ne abbiamo implementato una versione di prova per verificare quanto effettivamente possa costare, in termini di tempi di esecuzione, uno script di importazione dati che sia stato progettato sbadatamente. Il secondo (handmade, bufferizzato) garantisce una buona velocità di lettura e ci ha consentito di utilizzare direttamente i file forniti. Il terzo (\texttt{mmread}) è il più performante, e sicuramente quello che richiede meno lavoro nel caso i file siano formattati secondo lo standard Matrix Market.
+
+Sono riportati (Figura \ref{lettura}) i risultati di tre test di lettura eseguiti sulle sei matrici non simmetriche. Come si può vedere, uno script che sia ben progettato (e che bufferizzi le letture) è equiparabile in velocità di lettura al metodo \texttt{mmread} fornito da \texttt{scipy}, mentre uno non particolarmente ben scritto scala decisamente male rispetto all'aumentare delle dimensioni dei files.
 
 \begin{figure}[!ht]
 \centering
@@ -105,16 +113,19 @@ buff & 27.38 secs & 6.92 MB/s \\
 \bottomrule
 \end{tabular}
 \caption{tempi e velocità di importazione complessivi delle 6 matrici}
+\label{tabella1}
 \end{figure}
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[scale=0.51]{images/lettura} 
+\caption{Tempi di lettura per le matrici fornite}
+\label{lettura}
 \end{figure}
 
-Sono riportati i risultati di tre test di lettura eseguiti sulle sei matrici non simmetriche. Come si può vedere, uno script che sia ben progettato (e che bufferizzi le letture) è equiparabile in velocità di lettura al metodo \texttt{mmread} fornito da \texttt{scipy}, mentre uno non particolarmente ben scritto scala decisamente male rispetto all'aumentare delle dimensioni dei files.
-
 In fase di test dei metodi risolutivi abbiamo infine optato per l'utilizzo di \texttt{mmread} (il più rapido), dopo aver convertito le matrici scaricate nel formato Matrix Market e averne salvato i file.
+
+\subsubsection*{Memorizzazione}
 
 Una volta letti i dati dal disco, è necessario scegliere il formato con cui memorizzare la matrice in RAM. Scipt ne mette a disposizione diversi: \texttt{coo} (coordinate format), \texttt{csc / crs} (compressed sparse columns/rows format), \texttt{dok} (dictionary of keys), e altri. Inizialmente avevamo optato per il formato \texttt{coo} (perché il più semplice su cui mappare il formato dei file di testo contenenti le matrici), ma degli \texttt{SparseEfficiencyWarning} sollevati dall'ambiente durante la risoluzione dei sistemi ci hanno successivamente spinto a convertire le matrici in formato \texttt{csc}, per motivi implementativi il preferito dai risolutori di sistemi integrati in Scipy. Peraltro la conversione si riduce semplicemente alla chiamata di un metodo di casting in fase di importazione.
 
@@ -125,20 +136,25 @@ Oltre a \texttt{spsolve}, abbiamo voluto testare anche un procedimento di risolu
 
 \texttt{spsolve} si è rivelato più veloce del procedimento manuale (probabilmente in virtù di stratagemmi di configurazione nascosti nel wrapper). Non abbiamo invece rilevato alcuna differenza (né sui tempi necessari per la risoluzione dei sistemi, né sugli errori commessi) tra le sei matrici simmetriche definite positive e le sei matrici non simmetriche. 
 
+\subsubsection*{Risultati dei test}
+
+I tempi di risoluzione (Figura \ref{tempi_diretti}) sono del tutto accettabili: pochi millisecondi per le matrici più piccole, e con \texttt{spsolve} sotto i 3 secondi anche nel caso della matrice più grande ($46902 \times 46902$, con oltre 2 milioni di nonzeri). Questo vale sia che per le matrici simmetriche che per le non-simmetriche, e da qui la presenza di un singolo grafico: non abbiamo infatti rilevato che differenze minime (probabilmente dovute a rumore nei test) tra i dati generati dai due tipi di matrici.
+
 \begin{figure}[!ht]
 \centering
 \includegraphics[scale=0.50]{images/tempi_diretti} 
+\caption{Tempi di risoluzione con i metodi diretti}
+\label{tempi_diretti}
 \end{figure}
 
-I tempi di risoluzione sono assolutamente accettabili: pochi millisecondi per le matrici più piccole, e con \texttt{spsolve} sotto i 3 secondi anche nel caso della matrice più grande ($46902 \times 46902$, con oltre 2 milioni di nonzeri). Questo vale sia che per le matrici simmetriche che per le non-simmetriche, e da qui la presenza di un singolo grafico: non abbiamo infatti rilevato che differenze minime (probabilmente dovute a rumore nei test) tra i dati generati dai due tipi di matrici.
+Gli errori commessi dai metodi diretti (Figura \ref{errori_diretti}) sono vicini alla precisione macchina per le matrici più piccole, mentre sono di diversi ordini di grandezza più grandi per le ultime matrici. In ogni caso entrambi i metodi riescono a mantenere l'errore al di sotto del valore di $10^-6$ richiesto dal testo del progetto. Va comunque fatto notare che \texttt{spsolve} e i metodi per la fattorizzazione LU non mettono a disposizione strumenti per controllare l'errore commesso in fase di risoluzione.
 
-Gli errori commessi dai metodi diretti sono vicino alla precisione macchina per le matrici più piccole, mentre sono di diversi ordini di grandezza più grandi per le ultime matrici. In ogni caso entrambi i metodi riescono a mantenere l'errore al di sotto del valore di $10^-6$ richiesto dal testo del progetto. Va comunque fatto notare che \texttt{spsolve} e i metodi per la fattorizzazione LU non mettono a disposizione strumenti per controllare l'errore commesso in fase di risoluzione.
-
-\begin{figure}[!H]
+\begin{figure}[!ht]
 \centering
 \includegraphics[scale=0.50]{images/errori_diretti} 
+\caption{Errori sulla soluzione con i metodi diretti}
+\label{errori_diretti}
 \end{figure}
-
 
 \subsection*{Metodi iterativi}
 Scipy mette a disposizione parecchi metodi iterativi utilizzabili per la risoluzione di sistemi lineari sparsi. Nei nostri test abbiamo provato ad utilizzare i seguenti:
@@ -152,6 +168,8 @@ Scipy mette a disposizione parecchi metodi iterativi utilizzabili per la risoluz
 
 Nonostante i metodi sopra elencati sia stato in genere possibile ottenere soluzioni approssimate abbastanza buone e in tempi ragionevoli, configurare correttamente i risolutori non è del tutto banale.
 
+\subsubsection*{Tolleranza}
+
 In primo luogo, sebbene tutte le funzioni diano la possibilità di passare un parametro opzionale \texttt{tol}, questo non è utilizzabile per controllare in maniera affidabile l'errore commesso sulla soluzione. Il parametro è documentato come
 
 \begin{quote}
@@ -163,9 +181,50 @@ La documentazione non fornisce tuttavia alcuna spiegazione riguardo il modo in c
 
 Un primo modo per aggirare il problema consiste nel settare manualmente per ogni metodo le tolleranze in modo che l'errore sulla matrice più grande sia al di sotto del valore $10^{-6}$, ma questo (oltre a richiedere un certo numero di esperimenti) porta ad altri problemi. Ad esempio, settando \texttt{tol = 1e-15} con \texttt{cg} porta ad un errore finale dell'ordine di $10^{-7}$ sulla matrice $46902 \times 46902$, ma ad una precisione invece eccessiva sulla matrice più piccola $1891 \times 1891$, andando di fatto a impedire una convergenza rapida.
 
-Il problema è stato infine risolto utilizzando un parametro opzionale messo a disposizione da Scipy: \texttt{callback}. Le funzioni che implementano i metodi iterativi consentono al chiamante di passare una funzione di callback che viene chiamata al termine di ogni iterazione, con parametro \texttt{xk}, la soluzione corrente del sistema. Per ottenere degli errori uniformi sulle matrici di tutte le dimensioni è quindi possibile passare come callback una funzione che controlla se l'errore corrente è sotto il valore $10^{-6}$, e in caso positivo salva il valore di \texttt{xk} e solleva un'eccezione. L'eccezione non può venir catturata al livello della funzione Scipy, che quindi termina l'esecuzione e solleva a sua volta l'eccezione al livello superiore (quello dove c'è il codice dei test). A quel punto l'eccezione viene catturata, e la soluzione ottenuta salvata come soluzione finale della procedura.
+Il problema è stato infine risolto utilizzando un parametro opzionale messo a disposizione da Scipy: \texttt{callback}. Le funzioni che implementano i metodi iterativi consentono al chiamante di passare una funzione di callback, che viene chiamata al termine di ogni iterazione con parametro \texttt{xk}, la soluzione corrente del sistema. Per ottenere degli errori uniformi sulle matrici di tutte le dimensioni è quindi possibile passare come callback una funzione che controlla se l'errore corrente è sotto il valore $10^{-6}$, e in caso positivo salva il valore di \texttt{xk} e solleva un'eccezione. L'eccezione non può venir catturata al livello della funzione Scipy, che quindi termina l'esecuzione e solleva a sua volta l'eccezione al livello superiore (quello dove c'è il codice dei test). A quel punto l'eccezione viene catturata, e la soluzione ottenuta salvata come soluzione finale della procedura.
 
+\subsubsection*{Precondizionamento}
 
+Tutti i metodi iterativi testati sono stati chiamati passando alla funzione un precondizionatore \texttt{M}. Nei nostri test abbiamo utilizzato come precondizionatore un'approssimazione dell'inversa della matrice $A$, calcolata utililizzando il metodo \texttt{sparse.linalg.spilu} (sparse incomplete LU factorization). 
+Data la dimensione delle matrici (e il fatto che i metodi iterativi sono implementati in Python puro) non è possibile infatti risolvere i sistemi proposti con errore ragionevole senza precondizionare le matrici. Nei test effettuati è stato comunque tenuto in conto anche del tempo necessario per computare la fattorizzazione LU approssimata, che in Scipy è delegata alla libreria SuperLU che abbiamo menzionata in precedenza.
+
+\subsubsection*{Risultati dei test}
+
+I risultati dei test di convergenza (per le matrici simmetriche e poi per le nonsimmetriche) sono riportati in tabella (Figura \ref{tabella2}). Come si può notare, non ci sono particolari differenze (quantomeno nella capacità di convergere) tra matrici simmetriche definite positive e matrici non simmetriche. Due dei metodi iterativi testati (Conjugate Gradient Squared e L. Generalized Minimal Residual) convergono entro 500 iterazioni con errori inferiori a $10^{-6}$ sulle matrici di tutte le dimensioni. Conjugate Gradient e Minimum Residual non convergono, rispettivamente, sulle ultime due matrici e sulle ultime tre. L'unica differenza di rilievo tra le due tipologie di matrici la evidenzia Biconjugate Gradient Stabilized, che converge sulla matrice simmetrica più grande ma non sulla nonsimmetrica più grande.
+
+\begin{figure}[!ht]
+\centering
+\begin{tabular}{cr|ccccc}
+\toprule
+tipo & dim & \verb|bicgstab| & \verb|  cg   | & \verb|  cgs  | & \verb| lgmres| & \verb| minres| \\
+\midrule
+\multirow{5}{*}{$\ddots$} & {1891} & \yep & \yep & \yep & \yep & \yep \\
+& {5781} & \yep & \yep & \yep & \yep & \yep \\
+& {10671} & \yep & \yep & \yep & \yep & \yep \\
+& {16561} & \yep & \yep  & \yep & \yep & \nope \\
+& {23451} & \yep & \nope & \yep & \yep & \nope \\
+& {46902} & \nope & \nope & \yep & \yep & \nope \\ 
+\midrule
+\multirow{5}{*}{$\square$} & {1891} & \yep & \yep & \yep & \yep & \yep \\
+& {5781} & \yep & \yep & \yep & \yep & \yep \\
+& {10671} & \yep & \yep & \yep & \yep & \yep \\
+& {16561} & \yep & \yep  & \yep & \yep & \nope \\
+& {23451} & \yep & \nope & \yep & \yep & \nope \\
+& {46902} & \yep & \nope & \yep & \yep & \nope \\ 
+\bottomrule
+\end{tabular}
+\caption{errore sotto $10^{-6}$ (entro 500 iterazioni)}
+\label{tabella2}
+\end{figure}
+
+I tempi di esecuzione sono graficati in Figura \ref{tempi_iterativi}. Ad esempio \texttt{cgs}, che converge senza particolare problemi sui sistemi di tutte le dimensioni, non impiega più di una dozzina di secondi per terminare la computazione sulla matrice più grande. Anche i metodi che non convergono entro le 500 iterazioni sulle ultime matrici sono in grado di risolvere i sistemi lineari più piccoli, peraltro in tempi assai vicini a quelli impiegati dagli altri metodi. Questo è probabilmente dovuto al fatto che sulle prime matrici i tempi di esecuzione sono dominati dal tempo di calcolo del precondizionatore (LU approssimata, uguale per tutti i metodi da noi testati). Man mano che le dimensioni del problema aumentano, il fattore dominante diventa il tempo impiegato nelle iterazioni del metodo, e solo i metodi più performanti si dimostrano in grado di convergere in tempi brevi. 
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[scale=0.51]{images/tempi_iterativi} 
+\caption{Tempi di risoluzione (simmetriche) con i metodi iterativi}
+\label{tempi_iterativi}
+\end{figure}
 
 \subsection*{Problematiche incontrate}
 % matrice quasi singolare 

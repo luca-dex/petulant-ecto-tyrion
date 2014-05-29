@@ -72,9 +72,9 @@ def solve_system(A, method):
         try: 
             x, status = method(A, 
                                b, 
-                               tol=1e-15, 
+                               tol=1e-16, 
                                M=M,
-                               maxiter=350,
+                               maxiter=500,
                                callback=callback_func)
         except Exception:
             print("\t" + method.func_name + " converged on " +  str(size))
@@ -82,7 +82,7 @@ def solve_system(A, method):
 
         if status != 0:
             print("\t" + method.func_name + " DIDN'T converge on " +
-                  str(size) + " in less than 250 iterations")
+                  str(size) + " in less than 500 iterations")
             return current_x, sol_error(x, true_x)
         else:
             print("\t" + method.func_name + " converged on " +
