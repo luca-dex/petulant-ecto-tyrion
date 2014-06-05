@@ -20,7 +20,7 @@ from scipy.io import mmread
 import scipy.sparse.linalg as sla
 
 methods = (sla.spsolve,         # diretto standard
-           petulant.diretto_lu, # diretto con LU
+           petulant.direttolu,  # diretto con LU
            # sla.bicg,          # BIConjugate Gradient
            sla.bicgstab,        # BIConjugate Gradient Stabilized
            sla.cg,            # Conjugate Gradient

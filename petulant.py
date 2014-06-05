@@ -46,7 +46,7 @@ def solve_system(A, method):
 
     # solve Ax = b and check solution error
     # diretti
-    if method in [sla.spsolve, diretto_lu]:
+    if method in [sla.spsolve, direttolu]:
         x = method(A, b)
         print("\t" + method.func_name + " solved " + 
             str(size))
@@ -89,7 +89,7 @@ def solve_system(A, method):
                   str(size))
             return current_x, sol_error(x, true_x)
 
-def diretto_lu(A, b):
+def direttolu(A, b):
     lu = sla.splu(A)
     x = lu.solve(b)
     return x

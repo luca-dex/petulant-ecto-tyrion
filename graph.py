@@ -3,6 +3,7 @@ import numpy as np
 import pylab as P
 import os
 import StringIO
+import sys
 
 # dimensioni delle matrici
 x = None
@@ -156,14 +157,15 @@ width = 0.6
 for i in miter:
 	matricionaSimm = np.append(matricionaSimm, salvati[i][5])
 
+
 base = np.arange(len(matricionaSimm))
 P.bar(base, matricionaSimm, width=width, color='b', label='simmetriche', log=True, align='center')
 
-P.xticks(base + width, tuple(nomiMetodi))
+
+P.xticks(base, tuple(nomiMetodi))
 P.xlabel('Metodo utilizzato')
 P.ylabel('Errore')
 P.suptitle('Variazione dell\'errore su matrice simmetrica con')
-
 
 #
 # comparazione tempi iterativa simmetrica
