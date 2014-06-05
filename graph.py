@@ -172,16 +172,16 @@ P.suptitle('Variazione dell\'errore su matrice simmetrica con')
 #
 P.figure()
 
-miter = [v for v in chiavi if 'unsymm' in v and 'spsolve' not in v and 'times' in v]
-nomiMetodi = [n.split('_')[1] for n in miter]
+miterUn = [v for v in chiavi if 'unsymm' in v and 'spsolve' not in v and 'times' in v]
+nomiMetodiUn = [n.split('_')[1] for n in miterUn]
 matricionaUnSimm = np.array([])
 for i in miter:
 	matricionaUnSimm = np.append(matricionaUnSimm, salvati[i][5])
 
 base = np.arange(len(matricionaUnSimm))
-P.bar(base + width, matricionaUnSimm, width=width, color='r', label='non simmetriche', log=True, align='center')
+P.bar(base, matricionaUnSimm, width=width, color='r', label='non simmetriche', log=True, align='center')
 
-P.xticks(base + width, tuple(nomiMetodi))
+P.xticks(base + width, tuple(nomiMetodiUn))
 P.xlabel('Metodo utilizzato')
 P.ylabel('Errore')
 P.suptitle('Variazione dell\'errore su matrice simmetrica con')
