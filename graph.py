@@ -72,7 +72,7 @@ P.xticks(base + width, tuple(x))
 P.figure()
 ax = P.gca()
 
-miter = [v for v in chiavi if 'symm' in v and 'spsolve' not in v and 'times' in v]
+miter = [v for v in chiavi if 'unsymm' not in v and 'spsolve' not in v and 'times' in v]
 
 for i in miter:
 	title = i.split('_')[1]
@@ -92,7 +92,7 @@ P.xticks(base + width, tuple(x))
 P.figure()
 ax = P.gca()
 
-miter = [v for v in chiavi if 'symm' in v and 'spsolve' not in v and 'errs' in v]
+miter = [v for v in chiavi if 'unsymm' not in v and 'spsolve' not in v and 'errs' in v]
 
 for i in miter:
 	title = i.split('_')[1]
@@ -150,7 +150,7 @@ P.xticks(base + width, tuple(x))
 #
 P.figure()
 
-miter = [v for v in chiavi if 'symm' in v and 'spsolve' not in v and 'times' in v]
+miter = [v for v in chiavi if 'unsymm' not in v and 'spsolve' not in v and 'times' in v]
 nomiMetodi = [n.split('_')[1] for n in miter]
 matricionaSimm = np.array([])
 width = 0.6
@@ -164,27 +164,29 @@ P.bar(base, matricionaSimm, width=width, color='b', label='simmetriche', log=Tru
 
 P.xticks(base, tuple(nomiMetodi))
 P.xlabel('Metodo utilizzato')
-P.ylabel('Errore')
-P.suptitle('Variazione dell\'errore su matrice simmetrica con')
+P.ylabel('Tempi')
+tit = 'Variazione dei tempi su matrice simmetrica con ' + str(x[5]) + ' elementi'
+P.suptitle(tit)
 
 #
-# comparazione tempi iterativa simmetrica
+# comparazione errori iterativa simmetrica
 #
 P.figure()
 
-miterUn = [v for v in chiavi if 'unsymm' in v and 'spsolve' not in v and 'times' in v]
+miterUn = [v for v in chiavi if 'unsymm' not in v and 'spsolve' not in v and 'errs' in v]
 nomiMetodiUn = [n.split('_')[1] for n in miterUn]
 matricionaUnSimm = np.array([])
-for i in miter:
+for i in miterUn:
 	matricionaUnSimm = np.append(matricionaUnSimm, salvati[i][5])
 
 base = np.arange(len(matricionaUnSimm))
 P.bar(base, matricionaUnSimm, width=width, color='r', label='non simmetriche', log=True, align='center')
 
-P.xticks(base + width, tuple(nomiMetodiUn))
+P.xticks(base, tuple(nomiMetodiUn))
 P.xlabel('Metodo utilizzato')
 P.ylabel('Errore')
-P.suptitle('Variazione dell\'errore su matrice simmetrica con')
+tit = 'Variazione dell\'errore su matrice simmetrica con ' + str(x[5]) + ' elementi'
+P.suptitle(tit)
 
 #
 # stampa tutto
